@@ -13,10 +13,11 @@ require("debian.menu")
 -- require("mpd")
 -- {{{ Variable definitions
 -- Themes define colours, icons, and wallpapers
-beautiful.init("/home/b3hnam/.config/awesome/theme.lua")
+beautiful.init("/home/yottanami/.config/awesome/theme.lua")
 
 -- This is used later as the default terminal and editor to run.
-terminal = "urxvt +ls"
+--terminal = "urxvt +ls"
+terminal = "xterm"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
 
@@ -81,7 +82,7 @@ mylauncher = awful.widget.launcher({ image = image(beautiful.awesome_icon),
 -- Keyboard layout widget
 
 -- bottom wibox
-mystatusbar = awful.wibox({ position = "bottom", screen = 1, ontop = false, width = 1, height = 16 })
+-- mystatusbar = awful.wibox({ position = "bottom", screen = 1, ontop = false, width = 1, height = 16 })
 
 
 -- Create a textclock widget
@@ -183,6 +184,7 @@ root.buttons(awful.util.table.join(
 
 -- {{{ Key bindings
 globalkeys = awful.util.table.join(
+
     awful.key({ modkey,           }, "Left",   awful.tag.viewprev       ),
     awful.key({ modkey,           }, "Right",  awful.tag.viewnext       ),
     awful.key({ modkey,           }, "Escape", awful.tag.history.restore),
@@ -218,12 +220,17 @@ globalkeys = awful.util.table.join(
     awful.key({ modkey, "Shift"   }, "p", function () awful.util.spawn('pcmanfm') end),
     awful.key({ modkey, "Shift"   }, "f", function () awful.util.spawn('/usr/src/firefox/firefox') end),
     awful.key({ modkey, "Shift"   }, "t", function () awful.util.spawn('/usr/src/thunderbird/thunderbird') end),
-    awful.key({ modkey, "Shift"   }, "k", function () awful.util.spawn('/home/b3hnam/.kuso.d/kuso') end),
+    awful.key({ modkey, "Shift"   }, "k", function () awful.util.spawn('kuso') end),
     awful.key({ modkey, "Shift"   }, "g", function () awful.util.spawn('chromium') end),
-    awful.key({ modkey, "Shift"   }, "s", function () awful.util.spawn('chromium --proxy-server="socks5://localhost:1080"') end),
+    awful.key({ modkey, "Shift"   }, "s", function () awful.util.spawn('spotify') end),
+    awful.key({ modkey, "Shift"   }, "a", function () awful.util.spawn('amarok') end),
+    awful.key({ "Control",   }, "Home", function () awful.util.spawn('/home/yottanami/bin/multiscreen/brightness.rb ++') end),
+    awful.key({ "Control",  }, "End", function () awful.util.spawn('/home/yottanami/bin/multiscreen/brightness.rb --') end),
 
-    awful.key({  }, "XF86AudioLowerVolume" , function () awful.util.spawn('amixer -q -c 0 sset PCM,0 10%-') end),
-    awful.key({  }, "XF86AudioRaiseVolume" , function () awful.util.spawn('amixer -q -c 0 sset PCM,0 10%+') end),
+
+
+    awful.key({  }, "XF86AudioLowerVolume" , function () awful.util.spawn('amixer set Master 5%-') end),
+    awful.key({  }, "XF86AudioRaiseVolume" , function () awful.util.spawn('amixer set Master 5%+') end),
     awful.key({  }, "XF86AudioMute" , function () awful.util.spawn('amixer sset Master toggle') end),
 
 
@@ -254,6 +261,8 @@ globalkeys = awful.util.table.join(
 )
 
 clientkeys = awful.util.table.join(
+               -- share to all tags
+    awful.key({ modkey,           }, "s",      function (c) c.sticky = not c.sticky  end),
     awful.key({ modkey,           }, "f",      function (c) c.fullscreen = not c.fullscreen  end),
     awful.key({ modkey, "Shift"   }, "c",      function (c) c:kill()                         end),
     awful.key({ modkey, "Control" }, "space",  awful.client.floating.toggle                     ),
@@ -334,49 +343,6 @@ awful.rules.rules = {
     { rule = { class = "MPlayer" },
       properties = { floating = true } },
 
-
-
-
-    { rule = { class = "Pidgin", role = "conversation" },
-      properties = {tag = tags[1][9], floating=true,
-                  maximized_vertical=true, maximized_horizontal=false },
-                  callback = function (c)
-        local cl_width = 750    -- width of buddy list window
-        local def_left = true   -- default placement. note: you have to restart
-                                -- pidgin for changes to take effect
-
-        local scr_area = screen[c.screen].workarea
-        local cl_strut = c:struts()
-        local geometry = nil
-
-        -- adjust scr_area for this client's struts
-        if cl_strut ~= nil then
-            if cl_strut.left ~= nil and cl_strut.left > 0 then
-                geometry = {x=scr_area.x-cl_strut.left, y=scr_area.y,
-                            width=cl_strut.left}
-            elseif cl_strut.right ~= nil and cl_strut.right > 0 then
-                geometry = {x=scr_area.x+scr_area.width, y=scr_area.y,
-                            width=cl_strut.right}
-            end
-        end
-        -- scr_area is unaffected, so we can use the naive coordinates
-        if geometry == nil then
-            if def_left then
-                c:struts({left=cl_width, right=0})
-                geometry = {x=scr_area.x, y=scr_area.y,
-                            width=cl_width}
-            else
-                c:struts({right=cl_width, left=0})
-                geometry = {x=scr_area.x+scr_area.width-cl_width, y=scr_area.y,
-                            width=cl_width}
-            end
-        end
-        c:geometry(geometry)
-    end },
-
-
-
-
    { rule = { class =  "Thunderbird" },
       properties = { tag = tags[1][8] }},
    { rule = { class = "Gnome-alsamixer", "Vlc", "Sonata" },
@@ -387,24 +353,24 @@ awful.rules.rules = {
       properties = { floating = true } },
     { rule = { class = "Chromium" },
       properties = { tag = tags[1][3] ,maximized_vertical=true, maximized_horizontal=true}},
-
     { rule = { class = "Firefox" },
       properties = { tag = tags[1][4] ,maximized_vertical=true, maximized_horizontal=true}},
     { rule = { class = "URxvt" },
       properties = { tag = tags[1][1] }},
     { rule = { class = "Emacs" },
        properties = { tag = tags[1][2] ,maximized_vertical=true, maximized_horizontal=true} },
+    { rule = { class = "Pidgin" },
+       properties = { tag = tags[1][9] ,maximized_vertical=true, maximized_horizontal=true} },
+    { rule = { class = "Amarok" },
+       properties = { tag = tags[1][7] ,maximized_vertical=true, maximized_horizontal=true} },
+    { rule = { class = "Spotify" },
+       properties = { tag = tags[1][7] ,maximized_vertical=true, maximized_horizontal=true} },
 
     { rule = { class = "Gimp" },
       properties = { floating = true ,tag = tags[1][7] }},
     { rule = { class = "Gimp", role = "gimp-image-window" },
           properties = { maximized_horizontal = true,
                          maximized_vertical = true } },
-
-
-    -- Set Firefox to always map on tags number 2 of screen 1.
-    -- { rule = { class = "Firefox" },
-    --   properties = { tag = tags[1][2] } },
 }
 -- }}}
 
