@@ -1,0 +1,26 @@
+port			"6921"
+bind_to_address "127.0.0.1"
+music_directory         "~/Music/"
+pid_file              "~/.mpd2/mpd.pid"
+playlist_directory      "~/.mpd2/playlists"
+#db_file                 "~/.mpd2/mpd.db"
+db_file			 "~/.mpd2/tag_cache"
+log_file                "~/.mpd2/mpd.log"
+
+audio_output {    
+	     type	"httpd"    
+	     name       "b3hnam stream"    
+	     encoder	"vorbis"		# optional, vorbis or lame    
+	     port	"9990"    
+#	     quality	"5.0"			# do not define if bitrate is defined    
+	     bitrate	"128"	 	   # do not define if quality is defined    
+	     bind_to_address "0.0.0.0"
+	     format	"44100:16:1"    
+}
+
+audio_output { 
+         type                    "alsa"
+         name                    "My ALSA Device"
+         #device                  "hw:0,0"     # optional
+         #format                  "44100:16:2" # optional
+}

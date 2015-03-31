@@ -1,0 +1,39 @@
+--- rc.lua	2011-10-17 15:09:23.873388697 +0330
++++ rc.lua.old	2011-10-17 14:59:49.248358655 +0330
+@@ -15,7 +16,7 @@
+ beautiful.init("/usr/share/awesome/themes/default/theme.lua")
+ 
+ -- This is used later as the default terminal and editor to run.
+-terminal = "x-terminal-emulator"
++terminal = "urxvt"
+ editor = os.getenv("EDITOR") or "editor"
+ editor_cmd = terminal .. " -e " .. editor
+ 
+@@ -73,6 +74,12 @@
+ -- }}}
+ 
+ -- {{{ Wibox
++
++
++-- bottom wibox
++mystatusbar = awful.wibox({ position = "bottom", screen = 1, ontop = false, width = 1, height = 32 })
++
++
+ -- Create a textclock widget
+ mytextclock = awful.widget.textclock({ align = "right" })
+ 
+@@ -204,6 +222,8 @@
+ 
+     -- Standard program
+     awful.key({ modkey,           }, "Return", function () awful.util.spawn(terminal) end),
++    awful.key({ modkey,           }, "e", function () awful.util.spawn('pcmanfm') end),
++    awful.key({ modkey,           }, "w", function () awful.util.spawn('iceweseal') end),
+     awful.key({ modkey, "Control" }, "r", awesome.restart),
+     awful.key({ modkey, "Shift"   }, "q", awesome.quit),
+ 
+@@ -350,3 +370,4 @@
+ client.add_signal("focus", function(c) c.border_color = beautiful.border_focus end)
+ client.add_signal("unfocus", function(c) c.border_color = beautiful.border_normal end)
+ -- }}}
++awful.util.spawn_with_shell("~/.xinitrc")
+\ No newline at end of file
